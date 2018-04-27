@@ -1,3 +1,13 @@
+<html>
+<head>
+<style>
+    .red {color: red;}
+    .yellow {color: yellow;}
+    .green {color: green;}
+</style>
+</head>
+</html>
+
 <?php
  
     for($i = 0; $i < $size; $i++) {
@@ -9,7 +19,20 @@
         echo '<br>';
         echo 'EID: ' . $json_view[$i]['eid'];
         echo '<br>';
-        echo 'Status: ' . $json_view[$i]['status'];
+        
+        if($json_view[$i]['status'] === 'open') {
+            echo '<p class=green>' . 'Status: ' . $json_view[$i]['status'] . '</p>';
+        }
+        
+        if($json_view[$i]['status'] === 'closed') {
+            echo '<p class=red>' . 'Status: ' . $json_view[$i]['status'] . '</p>';
+        }
+        
+        if($json_view[$i]['status'] === 'unresponsive') {
+            echo '<p class=yellow>' . 'Status: ' . $json_view[$i]['status'] . '</p>';
+        }
+        
+        //echo 'Status: ' . $json_view[$i]['status'];
         echo '<br><br>';
     }
 
