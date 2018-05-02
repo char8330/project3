@@ -204,31 +204,18 @@ class Controller_Federation extends Controller
         }
         
         public function action_getattractions(){
-    //go to url page
-    //extract fields
     
-    //use eid to generate url where status is listed
-    //extract status
-    
-            
             $layout = View::forge('federation/layoutfull');
             $content = View::forge('federation/getattractions');
             
             $curl = Request::forge('https://www.cs.colostate.edu/~ct310/yr2018sp/master.json', 'curl');
             $result=$curl->execute();
             $json = json_decode($result, true);
- 
-//             $test = 'http://www.cs.colostate.edu/~anthos/ct310/index.php/federation/status';
-//             echo print_r(get_headers($test));
-            
-            
-            
-
-            $size = 15; sizeof($json);  //TODO ADD ALL LATER 
-            //echo $size;
+            $size =  sizeof($json); //44
+           
             //$json_statuses = [];
             $json_listing = [];
-            for($i = 0; $i < $size; $i++) {
+            for($i = 0; $i < $size; $i++) { 
                 $eid_url = 'http://www.cs.colostate.edu/~'. $json[$i]['eid'] .'/ct310/index.php/federation/status';
                 $sub_curl = Request::forge($eid_url, 'curl');
                 $url_headers = get_headers($eid_url);
@@ -248,33 +235,20 @@ class Controller_Federation extends Controller
                 if($json[$i]['status'] == '') {
                     $json[$i]['status'] = 'unresponsive';
                 }
-                
-                //echo '<pre>' . print_r($json[$i], true) . '</pre>';
 
-                
-                
-                $curl2 = Request::forge('https://www.cs.colostate.edu/~'. $json[$i]['eid'] .'/ct310/index.php/federation/listing', 'curl');
-                $result2=$curl2->execute();
-                $json2 = json_decode($result2, true);
-
-                
-                //array_push($json_listing,array("eid" => $json[$i]['eid'], "attractionData" => $json2));
-                //array_push($json_listing,array("attractionData" => $json2,"eid" =>));
-                //array_push($json_listing,array("attractionData" => $json2,"eid" => $json[$i]['eid']));
-                //print_r($json_listing);
-                //print_r($json2[0]);
-                //$size2 = sizeof($json_listing); //DOES json2 hold all objects??? pick/ take from it? 
-                //echo($size2);
-                 $size3 = sizeof($json2);
-                 for($j = 0; $j < $size3; $j++) {
-                        array_push($json_listing,array("eid" => $json[$i]['eid'], "shortname" => $json[$i]['nameShort'],"name" => $json2[$j]['name'], "state" => $json2[$j]['state'],"attractionid" => $json2[$j]['id'] ));
+                if($json[$i]['status'] == 'open'){
+                    $curl2 = Request::forge('https://www.cs.colostate.edu/~'. $json[$i]['eid'] .'/ct310/index.php/federation/listing', 'curl');
+                    $result2=$curl2->execute();
+                    $json2 = json_decode($result2, true);
+                    $size3 = sizeof($json2);
+                    for($j = 0; $j < $size3; $j++) {
+                            array_push($json_listing,array("eid" => $json[$i]['eid'], "shortname" => $json[$i]['nameShort'],"name" => $json2[$j]['name'], "state" => $json2[$j]['state'],"attractionid" => $json2[$j]['id'] ));
                  
-                 }
-//                 //print_r($json_listing);
+                    }
                 
                 
                 
-            }
+            }}
             $size2 = sizeof($json_listing);
             $content->set_safe( 'json_list', $json_listing); //give to view
             $content->set_safe('size2', $size2); //give json object list size
