@@ -1,4 +1,19 @@
-	 ///brochure
+<?php
+use Model\Travel;
+use Model\ormtravel; //new
+use Model\ormbrochure; 
+use Model\ormattraction;
+use Model\ormusers; //new
+/**
+ * Travel Controller
+ * use public function name() to add a page
+ * shares $layout = View::forge('southdakota/layoutfull'); with all pages
+ * checks if username and password is set on all pages
+ */
+class Controller_SouthDakota extends Controller
+{ 
+
+///brochure
 	 
 	 
 	       public function action_order($id)
@@ -148,3 +163,4 @@
 		}else{ echo "Login to order brochures"; Response::redirect('index.php/southdakota/login.php');}
 	}
 	 
+	}
