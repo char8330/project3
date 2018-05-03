@@ -1,0 +1,150 @@
+	 ///brochure
+	 
+	 
+	       public function action_order($id)
+	{       $session = Session::instance();
+                $username = $session->get('username');
+                $courses = ormbrochure::find('all', array('where' => array('user' => $username)));// find brochure related to specific attraction 
+                // attach urls to correct attraction index ....indexc/attractionttitle ideally 
+                
+                //delete entire list of brcoochures
+ 
+		//this loop converts all courses to a single string and stores them in $CoursesString
+		
+		foreach($courses as $key=>$course)
+		{
+			$CoursesString[$key] = $course['attraction'].": ".$course['quantity'].",\n "; //add attraction col
+		
+		}
+                $msg=implode(" ",$CoursesString);
+		//set the courses to the view for printing
+		//$content->set_safe('demos', $CoursesString); //demos? 
+		
+		//$content->set_safe('att', $courses);
+		
+		//admin 
+		mail("cassidyharless95@gmail.com","Recent Brochure Order On Your Site",$msg);
+		mail("jtperea@rams.colostate.edu","Recent Brochure Order On Your Site",$msg);
+		
+		mail("Aaron.Pereira@colostate.edu","Recent Brochure Order On Your Site",$msg);
+		mail("ct310@cs.colostate.edu","Recent Brochure Order On Your Site",$msg);
+		
+                $session = Session::instance();
+                $username = $session->get('username');
+                if ($username === 'cjh'){
+		mail("cassidyharless95@gmail.com","Your Recent Brochure Order",$msg);
+		}
+                if ($username === 'jtperea'){
+		mail("jtperea@rams.colostate.edu","Your Recent Brochure Order",$msg);
+		}
+                 if ($username === 'aaronper'){
+		mail("aaronper@cs.colostate.edu","Your Recent Brochure Order",$msg);
+		}
+                if ($username === 'aaronadmin'){
+		mail("Aaron.Pereira@colostate.edu","Your Recent Brochure Order",$msg);
+		}
+		 if ($username === 'bsay'){
+		mail("bsay@cs.colostate.edu","Your Recent Brochure Order",$msg);
+		}
+                if ($username === 'ct310'){
+		mail("ct310@cs.colostate.edu","Your Recent Brochure Order",$msg);
+		}
+                
+                //$used = ormtravel::find('all', array('where' => array('attraction' => $demo['firstName'])));
+                // prepare a delete statement// prep 
+                //$query = DB::delete('user');
+                // Set the table to delete from
+               // $query->table('brochure')->execute();
+                
+                //$b = ormbrochure::find($id);
+		//$gone = $demo->__toString();
+		//$b->delete();
+                
+                Response::redirect('index.php/southdakota/indexbrochure');
+	}
+	 
+	 
+	 
+	 
+	  public function action_indexbrochure()
+	{
+		//load the layout
+		$layout = View::forge('southdakota/layoutfull');
+		
+		//load the view
+		$content = View::forge('southdakota/indexbrochure'); //TODO: change this later to commentes/badlands
+                
+                
+                $session = Session::instance();
+                $username = $session->get('username');
+	
+		//get all courses using the ORM object - change to get ALL from ONE USER ---username 
+		//$courses = Ormbrochure::find('all');
+		
+		// find all articles from category 1 order descending by date
+		
+                $courses = ormbrochure::find('all', array('where' => array('user' => $username)));
+                
+                $content->set_safe('brochures', $courses); //demos? 
+                
+		//forge inner view
+		$layout->content = Response::forge($content);
+		return $layout;
+		
+	}
+	
+	public function post_indexbrochure($id) //prev post add
+	{
+	
+	
+	 $session = Session::instance();
+	$username = $session->get('username');
+	//if logged in 
+	if($username === 'ct310' || $username === 'jtperea' || $username === 'cjh' || $username === 'aaronadmin'|| $username === 'aaronper' || $username === 'bsay'){
+	
+		if (isset($_POST['comment2'])) {
+		$assignments = $_POST['comment2'];
+		
+		}
+		//reload the index page with the newly saved view
+		Response::redirect('index.php/southdakota/indexc/'.$id);
+		
+		}else{  Response::redirect('index.php/southdakota/login');} // make another view to add line: "Login to make comments"
+	}
+	 
+	public function get_add($attid) //not in use atm 
+	{
+		//load the layout
+		$layout = View::forge('southdakota/layoutfull');
+		//load the view
+		$content = View::forge('southdakota/add');
+		//forge inner view
+		$layout->content = Response::forge($content);
+		return $layout;
+	}
+	public function post_add($attid) //prev post add
+	{
+	 $session = Session::instance();
+	$username = $session->get('username');
+	if($username === 'ct310' || $username === 'jtperea' || $username === 'cjh' || $username === 'aaronadmin'|| $username === 'aaronper' || $username === 'bsay'){
+	
+		//extract course name, number and assignments from the input parameters
+		//$name = $_POST['id'];
+		//$number = $username; // $_POST['name']; // make user 
+		$assignments = $_POST['quantity'];
+		//create a new ORM object and populate it
+		$new = new ormbrochure();
+		$new->user = $username;
+		$new->quantity = $assignments;
+		
+		//find attraction
+		$att_name = ormattraction::find($attid);
+		$new->attraction = $att_name['firstName'];
+		//save the ORM object
+		$new->save();
+		//reload the index page with the newly saved view
+		Response::redirect('index.php/southdakota/indexbrochure.php');
+		
+		}else{ echo "Login to order brochures"; Response::redirect('index.php/southdakota/login.php');}
+	}
+	 
