@@ -1,0 +1,50 @@
+//adminIndex -- Page leading to adding attractions ---https://www.cs.colostate.edu/~char8330/ct310/index.php/southdakota/adminIndex
+//addEdit -- Page you add attractions on ---https://www.cs.colostate.edu/~char8330/ct310/index.php/southdakota/addEdit
+
+ public function action_adminIndex()
+        {
+		$session = Session::instance();
+                $username = $session->get('username');
+		if($username === 'ct310' || $username === 'jtperea' || $username === 'cjh' || $username === 'aaronadmin')
+		{
+                	$layout = View::forge('southdakota/layoutfull');
+        	        $content = View::forge('southdakota/adminIndex');
+	
+                	$travels = travel::getAll();
+        	        $content->set_safe('travels', $travels);
+	                $layout->content = Response::forge($content);
+                	return $layout;
+                	
+		}else{echo "You must be an admin to access this page! Please login with your admin id";}
+		//else shows nothing
+        }
+	       public function get_addEdit($id = null)
+        {
+                $session = Session::instance();
+                $username = $session->get('username');
+                if($username === 'ct310' || $username === 'jtperea' || $username === 'cjh' || $username === 'aaronadmin')
+                {
+                        $layout = View::forge('southdakota/layoutfull');
+                        $content = View::forge('southdakota/addEdit');
+                        $tr = new travel($id);
+                        $content->set_safe('tr', $tr);
+                        $layout->content = Response::forge($content);
+                        return $layout;
+                }
+                //else shows nothing
+        }
+        public function post_addEdit($id = null)
+        {
+                $session = Session::instance();
+                $username = $session->get('username');
+	
+                if($username === 'ct310' || $username === 'jtperea' || $username === 'cjh' || $username === 'aaronadmin')
+                {
+                	$tr = new travel($id);
+	                $tr->id = $_POST['id'];
+          	        $tr->name = $_POST['name'];
+                	$tr->save();
+	                Response::redirect('index.php/southdakota/adminIndex');
+		}
+		//else shows nothing
+        }
